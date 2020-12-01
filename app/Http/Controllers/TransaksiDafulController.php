@@ -98,6 +98,14 @@ class TransaksiDafulController extends Controller
         return response()->json(['msg' => 'berhasil disimpan']);
     }
 
+    public function print(Request $request)
+    {
+        // dd($request->ids);
+        $items = transaksi_daful::whereIn('id', explode(',', $request->ids))->get();
+        // dd($items);
+        return view('daful.print', ['items' => $items]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

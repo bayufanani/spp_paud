@@ -82,6 +82,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('keuangan', 'KeuanganController@index')->name('keuangan.index');
     Route::post('keuangan', 'KeuanganController@store')->name('keuangan.store');
     Route::get('export-keuangan', 'KeuanganController@export')->name('keuangan.export');
+    Route::post('keuangan/print', 'KeuanganController@print')->name('keuangan.print');
 
     //Pembayaran SPP
     Route::get('transaksi-spp', 'TransaksiController@index')->name('spp.index');
@@ -95,6 +96,7 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Transaksi daftar ulan
     Route::resource('/transaksi-daful', 'TransaksiDafulController');
+    Route::post('/transaksi-daful/print', 'TransaksiDafulController@print')->name('transaksi-daful.print');
 
     //Kuitansi
     Route::get('kuitansi', 'KuitansiController@index')->name('kuitansi.index');

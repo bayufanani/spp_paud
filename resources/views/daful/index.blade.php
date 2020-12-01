@@ -345,7 +345,7 @@
                 var form = document.createElement("form");
                 form.setAttribute("style", "display: none");
                 form.setAttribute("method", "post");
-                form.setAttribute("action", "{{ route('transaksi.print') }}");
+                form.setAttribute("action", "{{ route('transaksi-daful.print') }}");
                 form.setAttribute("target", "_blank");
 
                 var token = document.createElement("input");
