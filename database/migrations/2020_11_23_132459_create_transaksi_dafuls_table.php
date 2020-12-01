@@ -15,6 +15,8 @@ class CreateTransaksiDafulsTable extends Migration
     {
         Schema::create('transaksi_daful', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('siswa_id');
+            $table->integer('daful_id');
             $table->string('keterangan');
             $table->integer('jumlah_bayar');
             $table->tinyInteger('cicilan');

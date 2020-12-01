@@ -14,7 +14,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('spp.index') }}" class="nav-link {{ set_active(['spp.*'], 'active') }}">
+                        <a href="{{ route('transaksi-daful.index') }}" class="nav-link {{ set_active(['transaksi-daful.*'], 'active') }}">
                             <i class="fe fe-repeat"></i> Daftar Ulang
                         </a>
                     </li>

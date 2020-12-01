@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('page-name','Pembayaran SPP')
+@section('page-name','Daftar Ulang Siswa')
 
 @section('content')
 <div class="page-header">
@@ -12,7 +12,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Transaksi</h3>
+                <h3 class="card-title">Daftar Ulang</h3>
             </div>
             @if(session()->has('msg'))
             <div class="card-alert alert alert-{{ session()->get('type') }}" id="message" style="border-radius: 0px !important">
@@ -55,15 +55,6 @@
                         <div class="form-group" style="display: none" id="form-tagihan-2">
                             <label class="form-label">Total Tagihan</label>
                             IDR. <span id="harga">0</span>
-                            <label class="custom-switch">
-                                <input type="checkbox" class="custom-switch-input" id="ada-diskon">
-                                <span class="custom-switch-indicator"></span>
-                                <span class="custom-switch-description">Ada diskon? </span>
-                            </label>
-                        </div>
-                        <div class="form-group" style="display: none" id="form-diskon">
-                            <label class="form-label">Diskon (IDR)</label>
-                            <input type="text" name="diskon" id="diskon" class="form-control" placeholder="masukan angka dalam satuan mata uang, tanpa titik atau koma">
                         </div>
                         <div class="form-group" style="display: none" id="form-total">
                             <label class="form-label">Total Pembayaran</label>
@@ -83,14 +74,17 @@
                             <label class="form-label">Pembayaran</label>
                             <div class="selectgroup w-100">
                                 <label class="selectgroup-item">
-                                    <input type="radio" name="via" value="tunai" class="selectgroup-input" checked="">
+                                    <input type="radio" name="via" value="tunai" class="selectgroup-input" checked="" id="pil-tunai">
                                     <span class="selectgroup-button">Tunai</span>
                                 </label>
-                                <label class="selectgroup-item" style="display: none" id="opsi-tabungan">
-                                    <input type="radio" name="via" value="tabungan" class="selectgroup-input">
-                                    <span class="selectgroup-button">Potong Tabungan</span>
+                                <label class="selectgroup-item" id="opsi-tabungan">
+                                    <input type="radio" name="via" value="cicilan" class="selectgroup-input" id="pil-cicilan">
+                                    <span class="selectgroup-button">Cicilan</span>
                                 </label>
                             </div>
+                        </div>
+                        <div class="form-group" style="display: none" id="form-cicilan">
+                            <input type="number" name="cicilan" class="form-control" placeholder="jumlah_bayar" id="bayar_cicilan">
                         </div>
                         <div class="form-group" style="display: none" id="form-keterangan">
                             <label class="form-label">Keterangan</label>
@@ -119,11 +113,9 @@
                     <thead>
                         <tr>
                             <th class="w-1">No.</th>
-                            <th>Tanggal</th>
+                            <th>Daftar Ulang</th>
                             <th>Siswa</th>
-                            <th>Tagihan</th>
-                            <th>Diskon</th>
-                            <th>Dibayarkan</th>
+                            <th>Dibayar</th>
                             <th>Keterangan</th>
                             <th>Cetak</th>
                         </tr>
@@ -138,9 +130,7 @@
                                     {{ $item->siswa->nama.'('.$item->siswa->kelas->nama.')' }}
                                 </a>
                             </td>
-                            <td>{{ $item->tagihan->nama }}</td>
-                            <td>IDR. {{ format_idr($item->diskon) }}</td>
-                            <td>IDR. {{ format_idr($item->keuangan->jumlah) }}</td>
+                            <td>IDR. {{ format_idr($item->jumlah_bayar) }}</td>
                             <td style="max-width:150px;">{{ $item->keterangan }}</td>
                             <td>
                                 <label class="custom-control custom-checkbox">
@@ -178,6 +168,19 @@
 @endsection
 @section('js')
 <script>
+    function format_idr(bilangan) {
+        var number_str = bilangan.toString(),
+            sisa = number_str.length % 3,
+            rupiah = number_str.substr(0, sisa),
+            ribuan = number_str.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        return rupiah;
+    }
     require(['jquery', 'select2', 'sweetalert'], function($, select2, sweetalert) {
         $(document).ready(function() {
             //format IDR
@@ -211,37 +214,38 @@
                 } else {
                     siswa_id = this.value
                 }
-                //get saldo
-                $.ajax({
-                    url: "{{ route('api.getsaldo') }}/" + this.value,
-                    success: function(result) {
-                        $('#saldo').text(result.sal)
-                        saldo = result.saldo
-                        $('#form-tagihan').show()
-                        $('#form-tagihan-2').show()
-                        $('#form-total').show()
-                        $('#form-bulan').show()
-                        $('#form-pembayaran').show()
-                        if (saldo > 0) {
-                            $('#opsi-tabungan').show()
-                        }
-                        $('#form-keterangan').show()
-                        $('#btn-simpan').show()
-                    },
-                    beforeSend: function() {
-                        $('#saldo').text('tunggu, sedang mengambil saldo.....')
-                        $('#form-tagihan').hide()
-                        $('#form-tagihan-2').hide()
-                        $('#form-total').hide()
-                        $('#form-pembayaran').hide()
-                        $('#opsi-tabungan').hide()
-                        $('#form-keterangan').hide()
-                        $('#btn-simpan').hide()
-                    }
-                });
+                // //get saldo
+                // $.ajax({
+                //     url: "{{ route('api.getsaldo') }}/" + this.value,
+                //     success: function(result) {
+                //         $('#saldo').text(result.sal)
+                //         saldo = result.saldo
+                //         $('#form-tagihan').show()
+                //         $('#form-tagihan-2').show()
+                //         $('#form-total').show()
+                //         $('#form-bulan').show()
+                //         $('#form-pembayaran').show()
+                //         if (saldo > 0) {
+                //             $('#opsi-tabungan').show()
+                //         }
+                //         $('#form-keterangan').show()
+                //         $('#btn-simpan').show()
+                //     },
+                //     beforeSend: function() {
+                //         $('#saldo').text('tunggu, sedang mengambil saldo.....')
+                //         $('#form-tagihan').hide()
+                //         $('#form-tagihan-2').hide()
+                //         $('#form-total').hide()
+                //         $('#form-pembayaran').hide()
+                //         $('#opsi-tabungan').hide()
+                //         $('#form-keterangan').hide()
+                //         $('#btn-simpan').hide()
+                //     }
+                // });
                 //get tagihan
                 $.ajax({
-                    url: "{{ route('api.gettagihan') }}/" + this.value,
+                    url: "{{ route('api.getdaful') }}/" + this.value,
+                    method: 'post',
                     success: function(result) {
                         if (result.length == 0) {
                             alert('tidak ada item tagihan yang tersedia')
@@ -249,106 +253,41 @@
                         $("#tagihan").empty()
                         var first_el = [];
                         for (i = 0; i < result.length; i++) {
-                            var arr_bulan = [];
-                            for (var j = 0; j < result[i].transaksi.length; j++) {
-                                arr_bulan.push(result[i].transaksi[j].bulan)
-                            }
-                            if (i == 0) {
-                                first_el = arr_bulan;
-                            }
-                            var bulans = arr_bulan.join(',');
-                            $("#tagihan").append('<option value="' + result[i].id + '" data-harga="' + result[i].jumlah + '" data-bulan="' + bulans + '">' + result[i].nama + '</option>');
-                        }
-                        //set harga dari data pertama
-                        tagihan_id = result[0].id
-                        harga = result[0].jumlah
-                        if (harga <= saldo) {
-                            $('#opsi-tabungan').show()
-                        } else {
-                            $('#opsi-tabungan').hide()
+                            $("#tagihan").append('<option value="' + result[i].id + '" data-jumlah="' + result[i].jumlah + '" data-cicilan="' + result[i].cicilan +
+                                '">' + result[i].keterangan + '</option>');
                         }
 
-                        //menampilkan harga
-                        $('#harga').text(formatNumber(harga));
-                        $('#total').val(formatNumber(harga - diskon));
-
-                        // tampilkan bulan
-                        if (first_el.length > 0) {
-                            first_el.forEach((bln) => {
-                                var int_bln = parseInt(bln);
-                                $('#select_bulan>option')[int_bln].setAttribute('disabled', 'disabled');
-                            })
+                        var sisa = '';
+                        if (result[0].cicilan != 0) {
+                            sisa = '<span class="text-muted">(sudah dibayar ' + format_idr(result[0].cicilan) + ')</span>';
                         }
+                        $('#harga').html(result[0].jumlah_idr + sisa)
+
+                        $('#form-tagihan').show()
+                        $('#form-tagihan-2').show()
+                        $('#form-pembayaran').show()
+                        $('#form-keterangan').show()
+                        $('#btn-simpan').show()
                     },
                 });
-            })
+            });
+
+            $('#pil-tunai').on('change', function() {
+                $('#form-cicilan')[0].style.display = 'none'
+            });
+
+            $('#pil-cicilan').on('change', function() {
+                $('#form-cicilan')[0].style.display = null
+            });
 
             $('#tagihan').on('change', function() {
                 tagihan_id = this.value
                 //set harga dari opsi yang dipilih
                 harga = $('option:selected', this).attr('data-harga');
-                var bulan = $('option:selected', this).attr('data-bulan');
-                console.log(harga)
 
-                if (harga <= saldo) {
-                    $('#opsi-tabungan').show()
-                } else {
-                    $('#opsi-tabungan').hide()
-                }
-
-                //enable disabled bulan
-                var el_select_bulan = $('#select_bulan>option:disabled').toArray();
-                el_select_bulan.shift(); //hapus array pertama
-                el_select_bulan.forEach((el) => {
-                    el.removeAttribute('disabled');
-                });
-                if (bulan != "") {
-                    var arr_bulan = bulan.split(',');
-                    arr_bulan.forEach((bln) => {
-                        console.log(bln)
-                        var int_bln = parseInt(bln);
-                        console.log([$('#select_bulan>option'), int_bln])
-                        $('#select_bulan>option')[int_bln].setAttribute('disabled', 'disabled');
-                    })
-                }
-                // remove selected
-                var el_select_bulan = $('#select_bulan>option:selected').toArray();
-                el_select_bulan.forEach((el) => {
-                    el.removeAttribute('selected')
-                });
-                //set selected to first option
-                $('#select_bulan>option:eq(0)').prop('selected', true);
-
-                //jika diganti diskon kembali ke nol
-                diskon = 0
-                $('#diskon').val('');
                 //menampilkan harga
                 $('#harga').text(formatNumber(harga));
                 $('#total').val(formatNumber(harga - diskon));
-            })
-
-            $('#ada-diskon').on('change', function() {
-                $('#form-diskon').toggle();
-            })
-
-            $('#diskon').keyup(function() {
-                if (this.value <= 0) {
-                    this.value = ''
-                    diskon = 0
-                } else {
-                    diskon = this.value
-                }
-                if ((harga - diskon) < 0) {
-                    diskon = 0
-                    alert('diskon invalid, silahkan tulis ulang')
-                    $('#diskon').val('')
-                }
-                $('#total').val(formatNumber(harga - diskon));
-                if ((harga - diskon) <= saldo) {
-                    $('#opsi-tabungan').show()
-                } else {
-                    $('#opsi-tabungan').hide()
-                }
             })
 
             //pembayaran via
@@ -362,22 +301,19 @@
                     alert('diskon invalid')
                 } else {
                     $('#btn-simpan').addClass("btn-loading")
-
                     bulan = $('#select_bulan')[0].value;
                     $.ajax({
                         type: "POST",
-                        url: "{{ route('api.tagihan') }}/" + siswa_id,
+                        url: "{{ route('api.simpan_daful') }}/" + siswa_id,
                         data: {
                             tagihan_id: tagihan_id,
                             siswa_id: siswa_id,
-                            jumlah: harga,
-                            diskon: diskon,
-                            keterangan: keterangan.value,
-                            via: via,
-                            bulan: bulan
+                            bayar: $('#bayar_cicilan')[0].value,
+                            keterangan: $('#keterangan')[0].value,
+                            tipe_bayar: $('input[name=via]:checked')[0].value,
+                            daful_id: $('#tagihan')[0].value,
                         },
                         success: function(data) {
-                            console.log(data);
                             swal({
                                 title: data.msg
                             })

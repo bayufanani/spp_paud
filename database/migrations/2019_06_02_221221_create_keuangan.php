@@ -17,6 +17,7 @@ class CreateKeuangan extends Migration
             $table->bigIncrements('id');
             $table->integer('tabungan_id')->nullable();
             $table->integer('transaksi_id')->nullable();
+            $table->integer('daful_id')->nullable();
             $table->enum('tipe', ['in', 'out']);
             $table->double('jumlah');
             $table->double('total_kas');

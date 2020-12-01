@@ -10,6 +10,7 @@ class transaksi_daful extends Model
     use SoftDeletes;
 
     protected $table = 'transaksi_daful';
+    protected $appends = ['jumlah_idr'];
 
     protected $fillable = [
         'keterangan',
@@ -17,4 +18,13 @@ class transaksi_daful extends Model
         'cicilan',
         'lunas'
     ];
+
+    public function getJumlahIdrAttribute()
+    {
+        return "IDR. " . format_idr($this->jumlah);
+    }
+    public function siswa()
+    {
+        return $this->hasOne('App\Models\Siswa', 'id', 'siswa_id');
+    }
 }

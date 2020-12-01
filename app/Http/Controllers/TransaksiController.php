@@ -28,26 +28,6 @@ class TransaksiController extends Controller
     //pay tagihan
     public function store(Request $request, Siswa $siswa)
     {
-        // check transaksi sudah pernah disimpan
-        $tersimpan = false;
-        $transaksi_tersimpan = Transaksi::where([
-            'siswa_id' => $siswa->id,
-            'tagihan_id' => $request->tagihan_id
-        ])->get();
-        if ($transaksi_tersimpan != null) {
-            $tersimpan = true;
-        }
-
-        if ($tersimpan) {
-            // create di spp_bulan karena sudah ada transaksi
-            foreach (explode(',', $request->bulan) as $bln) {
-                $spp_bulan = new spp_bulan();
-                $spp_bulan->transaksi_id = $transaksi_tersimpan->id;
-                $spp_bulan->bulan = $bln;
-                $spp_bulan->save();
-            }
-            return response()->json(['msg' => 'transaksi berhasil dilakukan']);
-        }
 
         DB::beginTransaction();
         //mulai transaksi, membersihkan request->jumlah dari titik dan koma
@@ -61,7 +41,8 @@ class TransaksiController extends Controller
             'diskon' => $request->diskon,
             'is_lunas' => 1,
             'keterangan' => ($request->via == 'tabungan' ? 'dibayarkan melalui tabungan' : 'dibayarkan secara tunai, ') .
-                ', ' . $request->keterangan,
+                ', untuk bulan: ' . bulan_indo($request->bulan) . ', ' . $request->keterangan,
+            'bulan' => $request->bulan
         ]);
 
         //menyimpan transaksi
@@ -81,12 +62,6 @@ class TransaksiController extends Controller
                 'keterangan' => 'Pembayaran SPP oleh ' . $transaksi->siswa->nama . ' pada tanggal ' . $transaksi->created_at . ' dengan catatan : dibayarkan dengan ' . $request->via .
                     ', ' . $request->keterangan
             ]);
-            //juga save bulan
-            foreach (explode(',', $request->bulan) as $bln) {
-                $spp_bulan = new spp_bulan();
-                $spp_bulan->transaksi_id = $transaksi_tersimpan->id;
-                $spp_bulan->bulan = $bln;
-            }
         }
 
         // jika pembayaran dilakukan melalui tabungan
@@ -116,12 +91,6 @@ class TransaksiController extends Controller
                     'melakukan pembayaran spp sebesar ' . $menabung->jumlah
                     . ' pada ' . $menabung->created_at . ' dengan total tabungan ' . $menabung->saldo
             ]);
-            // save juga untuk bayar tabungan
-            foreach (explode(',', $request->bulan) as $bln) {
-                $spp_bulan = new spp_bulan();
-                $spp_bulan->transaksi_id = $transaksi_tersimpan->id;
-                $spp_bulan->bulan = $bln;
-            }
         }
 
         if ($keuangan) {

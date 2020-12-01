@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\models\daful;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
 use App\Models\Kelas;
@@ -18,8 +19,9 @@ class TagihanController extends Controller
      */
     public function index()
     {
-        $tagihan = Tagihan::orderBy('created_at','desc')->paginate(10);
-        return view('tagihan.index', ['tagihan' => $tagihan]);
+        $tagihan = Tagihan::orderBy('created_at', 'desc')->paginate(10);
+        $daful = daful::orderBy('created_at', 'desc')->paginate(10);
+        return view('tagihan.index', ['tagihan' => $tagihan, 'daful' => $daful]);
     }
 
     /**
@@ -30,8 +32,8 @@ class TagihanController extends Controller
     public function create()
     {
         $kelas = Kelas::all();
-        $siswa = Siswa::where('is_yatim','!=','1')->get();
-        return view('tagihan.form',[
+        $siswa = Siswa::where('is_yatim', '!=', '1')->get();
+        return view('tagihan.form', [
             'kelas' => $kelas,
             'siswa' => $siswa
         ]);
@@ -53,7 +55,7 @@ class TagihanController extends Controller
 
         $tagihan = Tagihan::make($request->except('kelas_id'));
 
-        switch($request->peserta){
+        switch ($request->peserta) {
             case 1: // semua
                 $tagihan->wajib_semua = 1;
                 break;
@@ -62,7 +64,7 @@ class TagihanController extends Controller
                 break;
             case 3: // siswa , make role
                 $tagihan->save();
-                foreach($request->siswa_id as $siswa_id){
+                foreach ($request->siswa_id as $siswa_id) {
                     $tagihan->siswa()->save(Siswa::find($siswa_id));
                 }
                 break;
@@ -70,12 +72,12 @@ class TagihanController extends Controller
                 return Redirect::back()->withErrors(['Peserta Wajib diisi']);
         }
 
-        if($tagihan->save()){
+        if ($tagihan->save()) {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'success',
                 'msg' => 'Item Tagihan ditambahkan'
             ]);
-        }else{
+        } else {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'danger',
                 'msg' => 'Err.., Terjadi Kesalahan'
@@ -92,8 +94,8 @@ class TagihanController extends Controller
     public function edit(Tagihan $tagihan)
     {
         $kelas = Kelas::all();
-        $siswa = Siswa::where('is_yatim','!=','1')->get();
-        return view('tagihan.form',[
+        $siswa = Siswa::where('is_yatim', '!=', '1')->get();
+        return view('tagihan.form', [
             'kelas' => $kelas,
             'siswa' => $siswa,
             'tagihan' => $tagihan
@@ -116,13 +118,13 @@ class TagihanController extends Controller
         ]);
 
         $tagihan->fill($request->except('kelas_id'));
-        
+
         //remove all related
         $tagihan->siswa()->detach();
         $tagihan->kelas_id = null;
         $tagihan->wajib_semua = null;
 
-        switch($request->peserta){
+        switch ($request->peserta) {
             case 1: // semua
                 $tagihan->wajib_semua = 1;
                 break;
@@ -130,7 +132,7 @@ class TagihanController extends Controller
                 $tagihan->kelas_id = $request->kelas_id;
                 break;
             case 3: // siswa , make role
-                foreach($request->siswa_id as $siswa_id){
+                foreach ($request->siswa_id as $siswa_id) {
                     $tagihan->siswa()->save(Siswa::find($siswa_id));
                 }
                 break;
@@ -138,12 +140,12 @@ class TagihanController extends Controller
                 return Redirect::back()->withErrors(['Peserta Wajib diisi']);
         }
 
-        if($tagihan->save()){
+        if ($tagihan->save()) {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'success',
                 'msg' => 'Item Tagihan diubah'
             ]);
-        }else{
+        } else {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'danger',
                 'msg' => 'Err.., Terjadi Kesalahan'
@@ -159,14 +161,14 @@ class TagihanController extends Controller
      */
     public function destroy(Tagihan $tagihan)
     {
-        if($tagihan->transaksi->count() != 0){
+        if ($tagihan->transaksi->count() != 0) {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'danger',
                 'msg' => 'tidak dapat menghapus tagihan yang masih memiliki transaksi'
             ]);
         }
         $tagihan->siswa()->detach();
-        if($tagihan->delete()){
+        if ($tagihan->delete()) {
             return redirect()->route('tagihan.index')->with([
                 'type' => 'success',
                 'msg' => 'tagihan telah dihapus'

@@ -20,6 +20,7 @@ class CreateTransaksi extends Migration
             $table->integer('diskon')->nullable();
             $table->boolean('is_lunas')->nullable();
             $table->text('keterangan')->nullable();
+            $table->integer('bulan');
             $table->timestamps();
             $table->softDeletes();
         });
