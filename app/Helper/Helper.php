@@ -43,3 +43,18 @@ if (!function_exists('bulan_indo')) {
         return $bulan[$bln];
     }
 }
+if (!function_exists('bulan_interval')) {
+    function bulan_interval($awal, $akhir)
+    {
+        $start = new DateTime($awal);
+        $end = new DateTime($akhir);
+        $interval = DateInterval::createFromDateString('1 month');
+        $period = new DatePeriod($start, $interval, $end);
+        $months = [];
+        foreach ($period as $dt) {
+            // $months[] = bulan_indo($dt->format('n'));
+            $months[] = $dt->format('n');
+        }
+        return $months;
+    }
+}

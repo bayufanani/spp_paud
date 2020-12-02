@@ -13,6 +13,11 @@
         <div class="card" id="print">
             <div class="card-body">
                 <div class="row">
+                    <div class="col-12">
+                        <img src="{{asset('images/logo.jpg')}}" alt="" width="100%">
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-9">
                         <h2>Transaksi Daftar Ulang</h2>
                     </div>

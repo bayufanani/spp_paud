@@ -73,7 +73,7 @@
                             <label class="form-label">Bulan Pembayaran</label>
                             <select name="bulan" class="form-control" id="select_bulan">
                                 <option value="" selected disabled>Pilih satu</option>
-                                @for($i=1;$i<=12;$i++) <option value="{{$i}}">
+                                @for($i=1;$i<=12;$i++) <option value="{{$i}}" disabled>
                                     {{bulan_indo($i)}}
                                     </option>
                                     @endfor
@@ -257,7 +257,7 @@
                                 first_el = arr_bulan;
                             }
                             var bulans = arr_bulan.join(',');
-                            $("#tagihan").append('<option value="' + result[i].id + '" data-harga="' + result[i].jumlah + '" data-bulan="' + bulans + '">' + result[i].nama + '</option>');
+                            $("#tagihan").append('<option value="' + result[i].id + '" data-harga="' + result[i].jumlah + '" data-bulan="' + bulans + '" data-bulan-aktif="' + result[i].bulan_aktif + '">' + result[i].nama + '</option>');
                         }
                         //set harga dari data pertama
                         tagihan_id = result[0].id
@@ -272,6 +272,10 @@
                         $('#harga').text(formatNumber(harga));
                         $('#total').val(formatNumber(harga - diskon));
 
+                        result[0].bulan_aktif.forEach(function(bln) {
+                            var int_bln = parseInt(bln);
+                            $('#select_bulan>option')[int_bln].removeAttribute('disabled');
+                        });
                         // tampilkan bulan
                         if (first_el.length > 0) {
                             first_el.forEach((bln) => {
@@ -288,7 +292,7 @@
                 //set harga dari opsi yang dipilih
                 harga = $('option:selected', this).attr('data-harga');
                 var bulan = $('option:selected', this).attr('data-bulan');
-                console.log(harga)
+                var bulan_aktif = $('option:selected', this).attr('data-bulan-aktif').split(',');
 
                 if (harga <= saldo) {
                     $('#opsi-tabungan').show()
@@ -296,12 +300,23 @@
                     $('#opsi-tabungan').hide()
                 }
 
-                //enable disabled bulan
-                var el_select_bulan = $('#select_bulan>option:disabled').toArray();
-                el_select_bulan.shift(); //hapus array pertama
-                el_select_bulan.forEach((el) => {
-                    el.removeAttribute('disabled');
+                // //enable disabled bulan
+                // var el_select_bulan = $('#select_bulan>option:disabled').toArray();
+                // el_select_bulan.shift(); //hapus array pertama
+                // el_select_bulan.forEach((el) => {
+                //     el.removeAttribute('disabled');
+                // });
+
+                //reset select
+                $('#select_bulan>option').toArray().forEach(function(el) {
+                    el.setAttribute('disabled', 'disabled');
                 });
+
+                bulan_aktif.forEach(function(bln) {
+                    var int_bln = parseInt(bln);
+                    $('#select_bulan>option')[int_bln].removeAttribute('disabled');
+                });
+
                 if (bulan != "") {
                     var arr_bulan = bulan.split(',');
                     arr_bulan.forEach((bln) => {
@@ -320,7 +335,7 @@
                 $('#select_bulan>option:eq(0)').prop('selected', true);
 
                 //jika diganti diskon kembali ke nol
-                diskon = 0
+                diskon = 0;
                 $('#diskon').val('');
                 //menampilkan harga
                 $('#harga').text(formatNumber(harga));
