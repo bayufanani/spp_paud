@@ -125,11 +125,12 @@
                                 <a class="icon" href="{{ route('daful.edit', $item->id) }}" title="edit item">
                                     <i class="fe fe-edit"></i>
                                 </a>
-                                <a class="icon btn-delete" href="#!" data-id="{{ $item->id }}" title="delete item">
+                                <a class="icon btn-delete daful-delete" href="#!" data-id="{{ $item->id }}" title="delete item">
                                     <i class="fe fe-trash"></i>
                                 </a>
-                                <form action="{{ route('daful.destroy', $item->id) }}" method="POST" id="form-{{ $item->id }}">
+                                <form action="{{ route('daful.destroy', $item->id) }}" method="POST" id="form-daful-{{ $item->id }}">
                                     @csrf
+                                    <input type="hidden" name="_method" value="DELETE">
                                 </form>
                             </td>
                         </tr>
@@ -170,6 +171,22 @@
                 })
             })
 
+            $(document).on('click', '.btn-delete.daful-delete', function() {
+                formid = $(this).attr('data-id');
+                swal({
+                    title: 'Anda yakin ingin menghapus?',
+                    text: 'tagihan yang dihapus tidak dapat dikembalikan',
+                    dangerMode: true,
+                    buttons: {
+                        cancel: true,
+                        confirm: true,
+                    },
+                }).then((result) => {
+                    if (result) {
+                        $('#form-daful-' + formid).submit();
+                    }
+                })
+            })
         });
     });
 </script>

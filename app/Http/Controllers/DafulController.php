@@ -67,7 +67,7 @@ class DafulController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('daful.create', ['tagihan' => daful::findOrFail($id)]);
     }
 
     /**
@@ -79,7 +79,15 @@ class DafulController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $daful_baru = daful::find($id);
+        $daful_baru->keterangan = $request->keterangan;
+        $daful_baru->jumlah = $request->jumlah;
+        $daful_baru->save();
+        return redirect()->route('tagihan.index')->with([
+            'type' => 'success',
+            'daful' => true,
+            'msg' => 'Tagihan Daftar Ulang disimpan'
+        ]);
     }
 
     /**
@@ -90,6 +98,11 @@ class DafulController extends Controller
      */
     public function destroy($id)
     {
-        //
+        daful::find($id)->delete();
+        return redirect()->route('tagihan.index')->with([
+            'type' => 'success',
+            'daful' => true,
+            'msg' => 'Tagihan Daftar Ulang dihapus'
+        ]);
     }
 }

@@ -1,12 +1,13 @@
 @extends('layouts.app')
 
 @section('site-name','Sistem Informasi SPP')
-@section('page-name', (isset($tagihan) ? 'Ubah Tagihan' : 'Tagihan Daftar Ulang Baru'))
+@section('page-name', (isset($tagihan) ? 'Ubah Tagihan Daftar Ulang' : 'Tagihan Daftar Ulang Baru'))
 
 @section('content')
 <div class="row">
     <div class="col-8">
         <form action="{{ (isset($tagihan) ? route('daful.update', $tagihan->id) : route('daful.index')) }}" method="post" class="card">
+            <input type="hidden" name="_method" value="PUT">
             <div class="card-header">
                 <h3 class="card-title">@yield('page-name')</h3>
             </div>
@@ -23,7 +24,7 @@
                         @csrf
                         <div class="form-group">
                             <label class="form-label">Nama</label>
-                            <input type="text" class="form-control" name="keterangan" placeholder="Nama" value="{{ isset($tagihan) ? $tagihan->nama : old('nama') }}" required>
+                            <input type="text" class="form-control" name="keterangan" placeholder="Nama" value="{{ isset($tagihan) ? $tagihan->keterangan : old('nama') }}" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Jumlah</label>
