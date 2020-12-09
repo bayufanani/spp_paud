@@ -33,9 +33,10 @@ class TransaksiDafulController extends Controller
             'siswa_id' => $siswa,
             'cicilan' => 1
         ])->get();
+        $murid = Siswa::find($siswa);
         $sudah_lunas = transaksi_daful::select('daful_id')->distinct('daful_id')->where('siswa_id', $siswa)->where('lunas', 1)->get();
         // return response()->json($sudah_lunas);
-        $daftar_ulang = daful::whereNotIn('id', $sudah_lunas)->get();
+        $daftar_ulang = daful::whereNotIn('id', $sudah_lunas)->where('periode_id', $murid->kelas->periode->id)->get();
         $daftar_ulang->map(function ($item) use ($siswa) {
             $item_cicilan = transaksi_daful::where([
                 'siswa_id' => $siswa,
