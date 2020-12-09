@@ -72,11 +72,6 @@
                         <div class="form-group" style="display: none" id="form-bulan">
                             <label class="form-label">Bulan Pembayaran</label>
                             <select name="bulan" class="form-control" id="select_bulan">
-                                <option value="" selected disabled>Pilih satu</option>
-                                @for($i=1;$i<=12;$i++) <option value="{{$i}}" disabled>
-                                    {{bulan_indo($i)}}
-                                    </option>
-                                    @endfor
                             </select>
                         </div>
                         <div class="form-group" style="display: none" id="form-pembayaran">
@@ -272,17 +267,36 @@
                         $('#harga').text(formatNumber(harga));
                         $('#total').val(formatNumber(harga - diskon));
 
-                        result[0].bulan_aktif.forEach(function(bln) {
-                            var int_bln = parseInt(bln);
-                            $('#select_bulan>option')[int_bln].removeAttribute('disabled');
+                        // result[0].bulan_aktif.forEach(function(bln) {
+                        //     var int_bln = parseInt(bln);
+                        //     $('#select_bulan>option')[int_bln].removeAttribute('disabled');
+                        // });
+                        // // tampilkan bulan
+                        // if (first_el.length > 0) {
+                        //     first_el.forEach((bln) => {
+                        //         var int_bln = parseInt(bln);
+                        //         $('#select_bulan>option')[int_bln].setAttribute('disabled', 'disabled');
+                        //     })
+                        // }
+
+                        $.ajax({
+                            url: "{{route('api.get_bulan_aktif')}}/" + siswa_id,
+                            success: function(result) {
+                                $('#select_bulan').empty();
+                                // console.log(result);
+                                $('#select_bulan').append('<option selected disabled>Pilih satu</option>')
+                                result.forEach(function(res) {
+                                    $('#select_bulan').append('<option value="' + res.index + '" id="opt_bulan_' + res.index + '">' + res.label + '</option>')
+                                });
+
+                                first_el.forEach(function(i) {
+                                    $('#opt_bulan_' + i).attr('disabled', 'disabled')
+                                });
+                            },
+                            error: function(error) {
+                                console.error(error);
+                            }
                         });
-                        // tampilkan bulan
-                        if (first_el.length > 0) {
-                            first_el.forEach((bln) => {
-                                var int_bln = parseInt(bln);
-                                $('#select_bulan>option')[int_bln].setAttribute('disabled', 'disabled');
-                            })
-                        }
                     },
                 });
             })
@@ -309,21 +323,21 @@
 
                 //reset select
                 $('#select_bulan>option').toArray().forEach(function(el) {
-                    el.setAttribute('disabled', 'disabled');
+                    el.removeAttribute('disabled');
                 });
 
-                bulan_aktif.forEach(function(bln) {
-                    var int_bln = parseInt(bln);
-                    $('#select_bulan>option')[int_bln].removeAttribute('disabled');
-                });
+                // bulan_aktif.forEach(function(bln) {
+                //     var int_bln = parseInt(bln);
+                //     $('#select_bulan>option').removeAttribute('disabled');
+                // });
 
                 if (bulan != "") {
                     var arr_bulan = bulan.split(',');
                     arr_bulan.forEach((bln) => {
-                        console.log(bln)
-                        var int_bln = parseInt(bln);
-                        console.log([$('#select_bulan>option'), int_bln])
-                        $('#select_bulan>option')[int_bln].setAttribute('disabled', 'disabled');
+                        // console.log(bln)
+                        // var int_bln = parseInt(bln);
+                        // console.log([$('#select_bulan>option'), int_bln])
+                        $('#opt_bulan_' + bln).attr('disabled', 'disabled');
                     })
                 }
                 // remove selected

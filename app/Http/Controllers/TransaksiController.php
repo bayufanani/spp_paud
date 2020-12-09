@@ -157,22 +157,18 @@ class TransaksiController extends Controller
     protected function getTagihan(Siswa $siswa)
     {
         //wajib semua
-        $tagihan_wajib = Tagihan::where('wajib_semua', '1')->with(['transaksi' => function ($query) use ($siswa) {
-            $query->where('siswa_id', $siswa->id);
-        }])->get()
-            ->map(function ($item) use ($siswa) {
-                $periode = $siswa->kelas->periode;
-                $item['bulan_aktif'] = bulan_interval($periode->tgl_mulai, $periode->tgl_selesai);
-                return $item;
-            })->toArray();
+        $tagihan_wajib = Tagihan::where('wajib_semua', '1')
+            ->with(['transaksi' => function ($query) use ($siswa) {
+                $query->where('siswa_id', $siswa->id);
+            }])->get()
+            ->toArray();
 
         //kelas only
-        $tagihan_kelas = Tagihan::where('kelas_id', $siswa->kelas->id)->with('transaksi')->get()
-            ->map(function ($item) use ($siswa) {
-                $periode = $siswa->kelas->periode;
-                $item['bulan_aktif'] = bulan_interval($periode->tgl_mulai, $periode->tgl_selesai);
-                return $item;
-            })->toArray();
+        $tagihan_kelas = Tagihan::where('kelas_id', $siswa->kelas->id)
+            ->with(['transaksi' => function ($query) use ($siswa) {
+                $query->where('siswa_id', $siswa->id);
+            }])->get()
+            ->toArray();
 
         //student only
         $tagihan_siswa = [];
@@ -203,5 +199,13 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::where('siswa_id', $siswa->id)->whereBetween('created_at', [$beweendate[0], $beweendate[1]])->get();
 
         return \Excel::download(new SppSiswaExport($siswa, $transaksi, $request->dates), 'spp_siswa-' . now() . '.xlsx');
+    }
+
+    public function getBulanAktif($siswa)
+    {
+        $data = Siswa::find($siswa);
+        $periode = $data->kelas->periode;
+        $months = bulan_interval($periode->tgl_mulai, $periode->tgl_selesai);
+        return response()->json($months);
     }
 }

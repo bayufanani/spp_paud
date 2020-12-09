@@ -53,7 +53,12 @@ if (!function_exists('bulan_interval')) {
         $months = [];
         foreach ($period as $dt) {
             // $months[] = bulan_indo($dt->format('n'));
-            $months[] = $dt->format('n');
+            $bln = bulan_indo($dt->format('n'));
+            $thn = $dt->format('Y');
+            $months[] = [
+                'index' => $dt->format('n'),
+                'label' => "{$bln} - {$thn}"
+            ];
         }
         return $months;
     }
