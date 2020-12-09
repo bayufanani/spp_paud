@@ -7,7 +7,9 @@
 <div class="row">
     <div class="col-8">
         <form action="{{ (isset($tagihan) ? route('daful.update', $tagihan->id) : route('daful.index')) }}" method="post" class="card">
+            @if(isset($tagihan))
             <input type="hidden" name="_method" value="PUT">
+            @endif
             <div class="card-header">
                 <h3 class="card-title">@yield('page-name')</h3>
             </div>
@@ -22,6 +24,15 @@
                 <div class="row">
                     <div class="col-12">
                         @csrf
+                        <div class="form-group">
+                            <label class="form-label">Periode</label>
+                            <select name="periode_id" id="periode_id" required class="form-control">
+                                <option value="" disabled selected>Pilih satu</option>
+                                @foreach($periode as $prd)
+                                <option value="{{$prd->id}}" {{ isset($tagihan->periode_id) && $tagihan->periode_id == $prd->id ? 'selected' : '' }}>{{$prd->nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label class="form-label">Nama</label>
                             <input type="text" class="form-control" name="keterangan" placeholder="Nama" value="{{ isset($tagihan) ? $tagihan->keterangan : old('nama') }}" required>

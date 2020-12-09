@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\models\daful;
+use App\Models\Periode;
 use App\Models\Siswa;
 use App\transaksi_daful;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class DafulController extends Controller
      */
     public function create()
     {
-        return view('daful.create');
+        return view('daful.create', ['periode' => Periode::all()]);
     }
 
     /**
@@ -40,6 +41,7 @@ class DafulController extends Controller
         $daful_baru = new daful;
         $daful_baru->keterangan = $request->keterangan;
         $daful_baru->jumlah = $request->jumlah;
+        $daful_baru->periode_id = $request->periode_id;
         $daful_baru->save();
         return redirect()->route('tagihan.index')->with([
             'type' => 'success',
@@ -67,7 +69,10 @@ class DafulController extends Controller
      */
     public function edit($id)
     {
-        return view('daful.create', ['tagihan' => daful::findOrFail($id)]);
+        return view('daful.create', [
+            'tagihan' => daful::findOrFail($id),
+            'periode' => Periode::all()
+        ]);
     }
 
     /**
