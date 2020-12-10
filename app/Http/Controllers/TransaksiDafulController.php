@@ -76,7 +76,7 @@ class TransaksiDafulController extends Controller
             'siswa_id' => $req->siswa,
             'daful_id' => $daful->id
         ])->get();
-        $sisa = $daful->jumlah - $tr_sebelumnya->sum('jumlah_bayar');
+        $sisa = $daful->jumlah - ($tr_sebelumnya->sum('jumlah_bayar') + $transaksi_daful->jumlah_bayar);
         if ($sisa == 0) {
             $transaksi_daful->lunas = 1; // lunaskan
         }

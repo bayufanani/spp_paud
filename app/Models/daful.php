@@ -22,4 +22,9 @@ class daful extends Model
     {
         return format_idr($this->jumlah);
     }
+
+    public function periode()
+    {
+        return $this->hasOne('App\Models\Periode', 'id', 'periode_id');
+    }
 }

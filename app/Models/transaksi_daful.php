@@ -27,4 +27,9 @@ class transaksi_daful extends Model
     {
         return $this->hasOne('App\Models\Siswa', 'id', 'siswa_id');
     }
+
+    public function daful()
+    {
+        return $this->hasOne('App\Models\daful', 'id', 'daful_id');
+    }
 }
