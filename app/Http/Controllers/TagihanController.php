@@ -8,6 +8,7 @@ use App\Models\Tagihan;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Role;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\Redirect;
 
 class TagihanController extends Controller
@@ -174,5 +175,29 @@ class TagihanController extends Controller
                 'msg' => 'tagihan telah dihapus'
             ]);
         }
+    }
+
+    public function tagihanSiswa($tagihan, $siswa)
+    {
+        $data = [];
+        $data['tagihan'] = Tagihan::find($tagihan);
+        $data['siswa'] = Siswa::find($siswa);
+        $periode = $data['siswa']->kelas->periode;
+        $data['bulans'] = bulan_interval($periode->tgl_mulai, $periode->tgl_selesai);
+        $bulan_dibayar = Transaksi::where([
+            'tagihan_id' => $data['tagihan']->id,
+            'siswa_id' => $data['siswa']->id
+        ])->get()->pluck('bulan');
+
+        // dd(array_search(2, $bulan_dibayar->toArray()));
+
+        //hapus data yg sudah ada di transaksi
+        foreach ($data['bulans'] as $key => $bln) {
+            if (array_search($bln['index'], $bulan_dibayar->toArray()) !== false) {
+                $data['bulans'][$key]['lunas'] = true;
+            }
+        }
+
+        return view('tagihan.siswa', $data);
     }
 }

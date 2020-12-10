@@ -118,13 +118,15 @@ class SiswaController extends Controller
         $id_periode = $siswa->kelas->periode->id;
         $daful_asli = daful::where('periode_id', $id_periode)->first();
 
+        $daful_jumlah = !isset($daful_asli->jumlah) ? 0 : $daful_asli->jumlah;
+
         return view('siswa.show', [
             'siswa' => $siswa,
             'saldo' => $saldo,
             'tabungan' => $tabungan,
             'tagihan' => $tagihan,
             'daful' => $daful,
-            'kurang' => $daful_asli->jumlah - $daful->sum('jumlah_bayar')
+            'kurang' =>  $daful_jumlah - $daful->sum('jumlah_bayar'),
         ]);
     }
 
@@ -295,6 +297,7 @@ class SiswaController extends Controller
             $payed = Transaksi::where('tagihan_id', $tagih['id'])->where('siswa_id', $siswa->id)->get();
             if ($payed->count() == 0) {
                 $tagihan[] = [
+                    'id' => $tagih['id'],
                     'nama' => $tagih['nama'],
                     'jumlah' => format_idr($tagih['jumlah']),
                     'diskon' => '',
@@ -306,6 +309,7 @@ class SiswaController extends Controller
             } else {
                 foreach ($payed as $pay) {
                     $tagihan[] = [
+                        'id' => $tagih['id'],
                         'nama' => $tagih['nama'],
                         'jumlah' => format_idr($tagih['jumlah']),
                         'diskon' => format_idr($pay->diskon),

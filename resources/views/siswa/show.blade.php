@@ -133,7 +133,7 @@
                     </tr>
                     @foreach($tagihan as $item)
                     <tr>
-                        <td>{{ $item['nama'] }}</td>
+                        <td><a href="{{route('tagihan.tagihan_siswa', [$item['id'],$siswa->id])}}">{{ $item['nama'] }}</a></td>
                         <td>{{ $item['total'] }}</td>
                         <td>
                             @if($item['is_lunas'])

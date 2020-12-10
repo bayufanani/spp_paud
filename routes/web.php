@@ -61,6 +61,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('tagihan/{tagihan}/ubah', 'TagihanController@edit')->name('tagihan.edit');
     Route::post('tagihan/{tagihan}/ubah', 'TagihanController@update')->name('tagihan.update');
     Route::post('tagihan/{tagihan}/hapus', 'TagihanController@destroy')->name('tagihan.destroy');
+    Route::get('tagihan/{tagihan}/siswa/{siswa}', 'TagihanController@tagihanSiswa')->name('tagihan.tagihan_siswa');
 
     //Users
     Route::get('user', 'UserController@index')->name('user.index');
