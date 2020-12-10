@@ -17,6 +17,7 @@ class CreateDafulTable extends Migration
             $table->bigIncrements('id');
             $table->string('keterangan');
             $table->integer('jumlah');
+            $table->integer('periode_id');
             $table->timestamps();
             $table->softDeletes();
         });
