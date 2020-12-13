@@ -13,7 +13,7 @@ use App\models\daful;
 use App\Models\Tabungan;
 use App\Models\Transaksi;
 use App\Models\Tagihan;
-use App\transaksi_daful;
+use App\Models\transaksi_daful;
 
 class SiswaController extends Controller
 {

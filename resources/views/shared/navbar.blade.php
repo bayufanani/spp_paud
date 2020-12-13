@@ -19,6 +19,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ route('tunggakan_siswa.index') }}" class="nav-link {{ set_active(['tunggakan_siswa.*'], 'active') }}">
+                            <i class="fe fe-repeat"></i> Siswa Menunggak
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ route('tabungan.index') }}" class="nav-link {{ set_active(['tabungan.*'], 'active') }}">
                             <i class="fe fe-repeat"></i> Tabungan
                         </a>

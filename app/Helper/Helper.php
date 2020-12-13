@@ -63,3 +63,20 @@ if (!function_exists('bulan_interval')) {
         return $months;
     }
 }
+if (!function_exists('bulan_interval_index')) {
+    function bulan_interval_index($awal, $akhir)
+    {
+        $start = new DateTime($awal);
+        $end = new DateTime($akhir);
+        $interval = DateInterval::createFromDateString('1 month');
+        $period = new DatePeriod($start, $interval, $end);
+        $months = [];
+        foreach ($period as $dt) {
+            // $months[] = bulan_indo($dt->format('n'));
+            $bln = bulan_indo($dt->format('n'));
+            $thn = $dt->format('Y');
+            $months[$dt->format('n')] = "{$bln} - {$thn}";
+        }
+        return $months;
+    }
+}

@@ -24,3 +24,4 @@ Route::post('transaksi-spp/{siswa?}', 'TransaksiController@store')->name('api.ta
 Route::post('transaksi-daful/{siswa?}', 'TransaksiDafulController@getdaful')->name('api.getdaful');
 Route::post('simpan-daful/{siswa?}', 'TransaksiDafulController@simpan_daful')->name('api.simpan_daful');
 Route::get('transaksi-daful/bulan/{siswa?}', 'TransaksiController@getBulanAktif')->name('api.get_bulan_aktif');
+Route::get('tunggakan/{id_tagihan?}', 'TunggakanController@tunggakan')->name('api.tunggakan');

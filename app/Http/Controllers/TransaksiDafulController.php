@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\models\daful;
 use App\Models\Keuangan;
 use App\Models\Siswa;
-use App\transaksi_daful;
+use App\Models\transaksi_daful;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

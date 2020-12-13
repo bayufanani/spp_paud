@@ -63,6 +63,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('tagihan/{tagihan}/hapus', 'TagihanController@destroy')->name('tagihan.destroy');
     Route::get('tagihan/{tagihan}/siswa/{siswa}', 'TagihanController@tagihanSiswa')->name('tagihan.tagihan_siswa');
 
+    Route::get('tunggakan', 'TunggakanController@index')->name('tunggakan_siswa.index');
+
     //Users
     Route::get('user', 'UserController@index')->name('user.index');
     Route::get('tambah-user', 'UserController@create')->name('user.create');
